@@ -1,0 +1,83 @@
+version: "3.9"
+
+# ── Networks ──────────────────────────────────────────────────
+networks:
+  ros_net:
+    driver: bridge
+
+# ── Common env fragment ───────────────────────────────────────
+x-ros-env: &ros-env
+  ROS_DOMAIN_ID: "0"
+  RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+  DISPLAY: "${DISPLAY:-:0}"
+
+services:
+
+  # ─ Core ROS 2 node (hardware + IMU + odometry) ─────────────
+  ros2:
+    image: makis-ros2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: makis_ros2
+    network_mode: host          # needed for multicast DDS discovery
+    privileged: true            # access to /dev/ttyACM0, /dev/i2c-*, /dev/video*
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0   # Arduino
+      - /dev/ttyUSB0:/dev/ttyUSB0   # HLS-LFCD2 LiDAR
+      - /dev/video0:/dev/video0     # Pi Camera
+      - /dev/i2c-1:/dev/i2c-1       # IMU (I²C bus 1)
+    volumes:
+      - /dev:/dev
+      - ./ros2_ws:/ros2_ws          # live source mount for development
+      - maps_vol:/maps              # persistent SLAM maps
+    environment:
+      <<: *ros-env
+      ARDUINO_PORT: /dev/ttyACM0
+      LIDAR_PORT: /dev/ttyUSB0
+      I2C_BUS: "1"
+    restart: unless-stopped
+    command: >
+      ros2 launch tank_bringup bringup.launch.py
+
+  # ─ SLAM + Nav2 (resource-heavy, start separately) ──────────
+  slam_nav:
+    image: makis-ros2
+    container_name: makis_slam_nav
+    network_mode: host
+    privileged: true
+    volumes:
+      - maps_vol:/maps
+    environment:
+      <<: *ros-env
+    profiles: ["slam"]
+    restart: unless-stopped
+    command: >
+      ros2 launch tank_bringup slam_nav.launch.py map_dir:=/maps
+
+  # ─ rosbridge WebSocket server (Android app) ────────────────
+  rosbridge:
+    image: makis-ros2
+    container_name: makis_rosbridge
+    network_mode: host
+    environment:
+      <<: *ros-env
+    restart: unless-stopped
+    command: >
+      ros2 launch rosbridge_server rosbridge_websocket_launch.xml
+        port:=9090
+
+  # ─ Web video server (camera stream to Android) ─────────────
+  web_video:
+    image: makis-ros2
+    container_name: makis_web_video
+    network_mode: host
+    environment:
+      <<: *ros-env
+    restart: unless-stopped
+    command: >
+      ros2 run web_video_server web_video_server
+        --ros-args -p port:=8080
+
+volumes:
+  maps_vol:

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>tank_bringup</name>
+  <version>1.0.0</version>
+  <description>Launch files and configuration for the Makis tank</description>
+  <maintainer email="you@example.com">Makis Project</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>tank_description</exec_depend>
+  <exec_depend>tank_hardware</exec_depend>
+  <exec_depend>tank_imu</exec_depend>
+  <exec_depend>hls_lfcd_lds_driver</exec_depend>
+  <exec_depend>v4l2_camera</exec_depend>
+  <exec_depend>robot_localization</exec_depend>
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>nav2_bringup</exec_depend>
+  <exec_depend>rosbridge_server</exec_depend>
+  <exec_depend>web_video_server</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
