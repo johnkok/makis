@@ -83,7 +83,7 @@ def generate_launch_description():
                     'i2c_bus':        i2c_bus,
                     'accel_addr':     0x19,
                     'mag_addr':       0x1E,
-                    'gyro_addr':      0x6B,
+                    'gyro_addr':      0x69,
                     'publish_rate_hz': 50.0,
                     'frame_id':       'imu_link',
                 }],
