@@ -16,6 +16,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration, Command
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
@@ -38,7 +39,10 @@ def generate_launch_description():
             package='robot_state_publisher',
             executable='robot_state_publisher',
             parameters=[{
-                'robot_description': Command(['xacro ', urdf_path]),
+                'robot_description': ParameterValue(
+                    Command(['xacro', ' ', urdf_path]),
+                    value_type=str,
+                ),
                 'use_sim_time': False,
             }],
         ),
