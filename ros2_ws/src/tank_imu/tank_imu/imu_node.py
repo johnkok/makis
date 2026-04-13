@@ -69,6 +69,7 @@ class ImuNode(Node):
         self.declare_parameter('frame_id',         'imu_link')
 
         bus_n      = self.get_parameter('i2c_bus').value
+        self._bus_n = bus_n
         self._acc  = self.get_parameter('accel_addr').value
         self._mag  = self.get_parameter('mag_addr').value
         self._gyro = self.get_parameter('gyro_addr').value
@@ -79,8 +80,9 @@ class ImuNode(Node):
             self.get_logger().error('smbus2 not installed; IMU disabled')
             return
 
-        self._bus = smbus2.SMBus(bus_n)
-        self._init_sensors()
+        self._bus = None
+        self._imu_ready = False
+        self._ensure_bus_and_init()
 
         self._imu_pub = self.create_publisher(Imu,           '/imu/data', 10)
         self._mag_pub = self.create_publisher(MagneticField, '/imu/mag',  10)
@@ -93,6 +95,22 @@ class ImuNode(Node):
 
         self.create_timer(1.0 / rate, self._timer_cb)
         self.get_logger().info('IMU node started')
+
+    def _ensure_bus_and_init(self):
+        if self._bus is None:
+            try:
+                self._bus = smbus2.SMBus(self._bus_n)
+            except OSError as e:
+                self._imu_ready = False
+                self.get_logger().warn(f'I2C bus open error: {e}', throttle_duration_sec=5.0)
+                return
+
+        try:
+            self._init_sensors()
+            self._imu_ready = True
+        except OSError as e:
+            self._imu_ready = False
+            self.get_logger().warn(f'IMU init error: {e}', throttle_duration_sec=5.0)
 
     # ── Sensor init ───────────────────────────────────────────
     def _init_sensors(self):
@@ -177,6 +195,11 @@ class ImuNode(Node):
     _last_time = None
 
     def _timer_cb(self):
+        if not self._imu_ready:
+            self._ensure_bus_and_init()
+            if not self._imu_ready:
+                return
+
         now = self.get_clock().now()
         if self._last_time is None:
             self._last_time = now
@@ -190,6 +213,7 @@ class ImuNode(Node):
             gx, gy, gz = self._read_gyro()
         except OSError as e:
             self.get_logger().warn(f'I2C read error: {e}', throttle_duration_sec=5.0)
+            self._imu_ready = False
             return
 
         self._mahony_update(ax, ay, az, gx, gy, gz, dt)

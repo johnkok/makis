@@ -10,11 +10,14 @@ if [ -f /ros2_ws/install/setup.bash ]; then
 fi
 
 # Set up udev rules for serial devices inside container
-if [ -e /dev/ttyAMA0 ]; then
+if [ -e /dev/ttyACM0 ]; then
     chmod 666 /dev/ttyACM0 2>/dev/null || true
 fi
 if [ -e /dev/ttyUSB0 ]; then
     chmod 666 /dev/ttyUSB0 2>/dev/null || true
+fi
+if [ -e /dev/ttyAMA0 ]; then
+    chmod 666 /dev/ttyAMA0 2>/dev/null || true
 fi
 if [ -e /dev/i2c-1 ]; then
     chmod 666 /dev/i2c-1 2>/dev/null || true
