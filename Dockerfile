@@ -57,12 +57,12 @@ RUN pip3 install --no-cache-dir \
 
 # ── Build libcamera 0.1.0 from source ────────────────────────
 # Ubuntu 22.04 ships 0.0.0+git20220204; camera_ros requires ≥ 0.1.0
-RUN git clone --depth 1 --branch v0.1.0 \
+RUN git clone --depth 1 --branch v0.3.0 \
         https://git.libcamera.org/libcamera/libcamera.git /tmp/libcamera \
     && cd /tmp/libcamera \
     && meson setup build --prefix=/usr \
-        -Dpipelines=rpi/vc4,rpi/pisp \
-        -Dipas=rpi/vc4,rpi/pisp \
+        -Dpipelines=all \
+        -Dipas=all \
         -Dlibunwind=disabled \
         -Dgstreamer=disabled \
         -Dtest=false \
