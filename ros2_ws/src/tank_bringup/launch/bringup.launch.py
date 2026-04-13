@@ -26,6 +26,10 @@ def generate_launch_description():
     default_arduino_port = os.environ.get('ARDUINO_PORT', '/dev/ttyUSB0')
     default_lidar_port = os.environ.get('LIDAR_PORT', '/dev/ttyAMA0')
     default_i2c_bus = os.environ.get('I2C_BUS', '1')
+    default_accel_addr = int(os.environ.get('IMU_ACCEL_ADDR', '0x19'), 0)
+    default_mag_addr = int(os.environ.get('IMU_MAG_ADDR', '0x1E'), 0)
+    default_gyro_addr = int(os.environ.get('IMU_GYRO_ADDR', '0x69'), 0)
+    default_use_gyro = os.environ.get('IMU_USE_GYRO', 'true').lower() in ('1', 'true', 'yes', 'on')
     i2c_device = f'/dev/i2c-{default_i2c_bus}'
 
     # ── Args ─────────────────────────────────────────────────
@@ -81,9 +85,10 @@ def generate_launch_description():
                 name='imu_node',
                 parameters=[{
                     'i2c_bus':        i2c_bus,
-                    'accel_addr':     0x19,
-                    'mag_addr':       0x1E,
-                    'gyro_addr':      0x69,
+                    'accel_addr':     default_accel_addr,
+                    'mag_addr':       default_mag_addr,
+                    'gyro_addr':      default_gyro_addr,
+                    'use_gyro':       default_use_gyro,
                     'publish_rate_hz': 50.0,
                     'frame_id':       'imu_link',
                 }],

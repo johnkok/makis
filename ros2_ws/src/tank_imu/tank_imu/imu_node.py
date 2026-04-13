@@ -65,6 +65,7 @@ class ImuNode(Node):
         self.declare_parameter('accel_addr',       0x19)
         self.declare_parameter('mag_addr',         0x1E)
         self.declare_parameter('gyro_addr',        0x6B)
+        self.declare_parameter('use_gyro',         True)
         self.declare_parameter('publish_rate_hz',  50.0)
         self.declare_parameter('frame_id',         'imu_link')
 
@@ -73,6 +74,7 @@ class ImuNode(Node):
         self._acc  = self.get_parameter('accel_addr').value
         self._mag  = self.get_parameter('mag_addr').value
         self._gyro = self.get_parameter('gyro_addr').value
+        self._use_gyro = self.get_parameter('use_gyro').value
         rate       = self.get_parameter('publish_rate_hz').value
         self._fid  = self.get_parameter('frame_id').value
 
@@ -125,7 +127,12 @@ class ImuNode(Node):
         self._bus.write_byte_data(self._mag, MAG_MR,  0x00)
 
         # Gyro: 95 Hz, 250 dps, all axes
-        self._bus.write_byte_data(self._gyro, GYRO_CTRL1, 0x0F)
+        if self._use_gyro:
+            try:
+                self._bus.write_byte_data(self._gyro, GYRO_CTRL1, 0x0F)
+            except OSError as e:
+                self._use_gyro = False
+                self.get_logger().warn(f'Gyro init failed at 0x{self._gyro:02X}: {e}; continuing without gyro')
 
     # ── I²C read helpers ──────────────────────────────────────
     def _read_accel(self):
@@ -148,6 +155,8 @@ class ImuNode(Node):
                 rz * MAG_Z_SCALE  * 1e-4)
 
     def _read_gyro(self):
+        if not self._use_gyro:
+            return 0.0, 0.0, 0.0
         data = self._bus.read_i2c_block_data(self._gyro, 0xA8, 6)
         x, y, z = struct.unpack('<hhh', bytes(data))
         return x * GYRO_SCALE, y * GYRO_SCALE, z * GYRO_SCALE
@@ -210,7 +219,12 @@ class ImuNode(Node):
         try:
             ax, ay, az = self._read_accel()
             mx, my, mz = self._read_mag()
-            gx, gy, gz = self._read_gyro()
+            try:
+                gx, gy, gz = self._read_gyro()
+            except OSError as e:
+                self._use_gyro = False
+                self.get_logger().warn(f'Gyro read error: {e}; disabling gyro and continuing', throttle_duration_sec=5.0)
+                gx, gy, gz = 0.0, 0.0, 0.0
         except OSError as e:
             self.get_logger().warn(f'I2C read error: {e}', throttle_duration_sec=5.0)
             self._imu_ready = False
