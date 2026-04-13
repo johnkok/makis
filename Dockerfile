@@ -28,8 +28,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-robot-localization \
     ros-${ROS_DISTRO}-hls-lfcd-lds-driver \
     ros-${ROS_DISTRO}-v4l2-camera \
-    libcamera0 \
-    libcamera-dev \
+    meson \
+    ninja-build \
+    libgnutls28-dev \
+    python3-yaml \
+    python3-ply \
+    libudev-dev \
     ros-${ROS_DISTRO}-image-transport \
     ros-${ROS_DISTRO}-image-transport-plugins \
     ros-${ROS_DISTRO}-rosbridge-suite \
@@ -50,6 +54,21 @@ RUN pip3 install --no-cache-dir \
     smbus2==0.4.3 \
     pyserial==3.5 \
     transforms3d==0.4.1
+
+# ── Build libcamera 0.1.0 from source ────────────────────────
+# Ubuntu 22.04 ships 0.0.0+git20220204; camera_ros requires ≥ 0.1.0
+RUN git clone --depth 1 --branch v0.1.0 \
+        https://git.libcamera.org/libcamera/libcamera.git /tmp/libcamera \
+    && cd /tmp/libcamera \
+    && meson setup build --prefix=/usr \
+        -Dpipelines=rpi/vc4,rpi/pisp \
+        -Dipas=rpi/vc4,rpi/pisp \
+        -Dlibunwind=disabled \
+        -Dgstreamer=disabled \
+        -Dtest=false \
+    && ninja -C build install \
+    && ldconfig \
+    && rm -rf /tmp/libcamera
 
 # ── Build workspace ───────────────────────────────────────────
 WORKDIR /ros2_ws
