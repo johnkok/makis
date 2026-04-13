@@ -26,6 +26,7 @@ def generate_launch_description():
     default_arduino_port = os.environ.get('ARDUINO_PORT', '/dev/ttyUSB0')
     default_lidar_port = os.environ.get('LIDAR_PORT', '/dev/ttyAMA0')
     default_i2c_bus = os.environ.get('I2C_BUS', '1')
+    default_camera_device = os.environ.get('CAMERA_DEVICE', '/dev/video0')
     default_accel_addr = int(os.environ.get('IMU_ACCEL_ADDR', '0x19'), 0)
     default_mag_addr = int(os.environ.get('IMU_MAG_ADDR', '0x1E'), 0)
     default_gyro_addr = int(os.environ.get('IMU_GYRO_ADDR', '0x69'), 0)
@@ -114,14 +115,14 @@ def generate_launch_description():
     else:
         actions.append(LogInfo(msg=f'Skipping LiDAR node; device not found: {default_lidar_port}'))
 
-    if os.path.exists('/dev/video0'):
+    if os.path.exists(default_camera_device):
         actions.append(
             Node(
                 package='v4l2_camera',
                 executable='v4l2_camera_node',
                 name='camera',
                 parameters=[{
-                    'video_device': '/dev/video0',
+                    'video_device': default_camera_device,
                     'image_size':   [640, 480],
                     'camera_frame_id': 'camera_optical_frame',
                 }],
@@ -129,7 +130,7 @@ def generate_launch_description():
             )
         )
     else:
-        actions.append(LogInfo(msg='Skipping camera node; device not found: /dev/video0'))
+        actions.append(LogInfo(msg=f'Skipping camera node; device not found: {default_camera_device}'))
 
     actions.append(
         Node(

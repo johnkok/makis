@@ -33,6 +33,7 @@ services:
       <<: *ros-env
       ARDUINO_PORT: /dev/ttyUSB0
       LIDAR_PORT: /dev/ttyAMA0
+      CAMERA_DEVICE: /dev/video19
       I2C_BUS: "1"
     restart: unless-stopped
     command: >
