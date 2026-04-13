@@ -23,17 +23,18 @@ services:
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0   # Arduino
       - /dev/ttyAMA0:/dev/ttyAMA0   # HLS-LFCD2 LiDAR
-      - /dev/video0:/dev/video0     # Pi Camera
       - /dev/i2c-1:/dev/i2c-1       # IMU (I²C bus 1)
     volumes:
       - /dev:/dev
+      - /run/udev:/run/udev:ro      # libcamera device enumeration
       - ./ros2_ws/src:/ros2_ws/src  # live source mount without masking image install
       - maps_vol:/maps              # persistent SLAM maps
     environment:
       <<: *ros-env
       ARDUINO_PORT: /dev/ttyUSB0
       LIDAR_PORT: /dev/ttyAMA0
-      CAMERA_DEVICE: /dev/video0
+      CAMERA_BACKEND: libcamera
+      CAMERA_INDEX: "0"
       I2C_BUS: "1"
     restart: unless-stopped
     command: >

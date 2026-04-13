@@ -28,6 +28,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-robot-localization \
     ros-${ROS_DISTRO}-hls-lfcd-lds-driver \
     ros-${ROS_DISTRO}-v4l2-camera \
+    ros-${ROS_DISTRO}-camera-ros \
+    libcamera0 \
+    python3-libcamera \
     ros-${ROS_DISTRO}-image-transport \
     ros-${ROS_DISTRO}-image-transport-plugins \
     ros-${ROS_DISTRO}-rosbridge-suite \

@@ -27,6 +27,8 @@ def generate_launch_description():
     default_lidar_port = os.environ.get('LIDAR_PORT', '/dev/ttyAMA0')
     default_i2c_bus = os.environ.get('I2C_BUS', '1')
     default_camera_device = os.environ.get('CAMERA_DEVICE', '/dev/video0')
+    camera_index = int(os.environ.get('CAMERA_INDEX', '0'))
+    camera_backend = os.environ.get('CAMERA_BACKEND', 'libcamera')
     default_accel_addr = int(os.environ.get('IMU_ACCEL_ADDR', '0x19'), 0)
     default_mag_addr = int(os.environ.get('IMU_MAG_ADDR', '0x1E'), 0)
     default_gyro_addr = int(os.environ.get('IMU_GYRO_ADDR', '0x69'), 0)
@@ -115,7 +117,24 @@ def generate_launch_description():
     else:
         actions.append(LogInfo(msg=f'Skipping LiDAR node; device not found: {default_lidar_port}'))
 
-    if os.path.exists(default_camera_device):
+    if camera_backend == 'libcamera':
+        actions.append(
+            Node(
+                package='camera_ros',
+                executable='camera_node',
+                name='camera',
+                parameters=[{
+                    'camera':    camera_index,
+                    'width':     640,
+                    'height':    480,
+                    'format':    'RGB888',
+                    'frame_id':  'camera_optical_frame',
+                }],
+                remappings=[('/camera/image_raw', '/camera/image_raw')],
+                output='screen',
+            )
+        )
+    elif os.path.exists(default_camera_device):
         actions.append(
             Node(
                 package='v4l2_camera',
