@@ -28,9 +28,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-robot-localization \
     ros-${ROS_DISTRO}-hls-lfcd-lds-driver \
     ros-${ROS_DISTRO}-v4l2-camera \
-    ros-${ROS_DISTRO}-camera-ros \
     libcamera0 \
-    python3-libcamera \
+    libcamera-dev \
     ros-${ROS_DISTRO}-image-transport \
     ros-${ROS_DISTRO}-image-transport-plugins \
     ros-${ROS_DISTRO}-rosbridge-suite \
@@ -55,6 +54,11 @@ RUN pip3 install --no-cache-dir \
 # ── Build workspace ───────────────────────────────────────────
 WORKDIR /ros2_ws
 COPY ros2_ws/src ./src
+
+# Build camera_ros from source (not in Humble apt index)
+RUN git clone --depth 1 --branch main \
+    https://github.com/christianrauch/camera_ros.git \
+    /ros2_ws/src/camera_ros
 
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     colcon build \
