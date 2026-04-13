@@ -14,15 +14,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-pip \
     python3-serial \
     python3-smbus2 \
+    python3-colcon-common-extensions \
     i2c-tools \
     usbutils \
     git \
     wget \
     curl \
     build-essential \
-    colcon-common-extensions \
-    ros-${ROS_DISTRO}-ament-cmake \
-    ros-${ROS_DISTRO}-ament-python \
     ros-${ROS_DISTRO}-slam-toolbox \
     ros-${ROS_DISTRO}-nav2-bringup \
     ros-${ROS_DISTRO}-nav2-common \
