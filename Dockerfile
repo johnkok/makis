@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-web-video-server \
     ros-${ROS_DISTRO}-tf2-tools \
     ros-${ROS_DISTRO}-tf2-ros \
+    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     ros-${ROS_DISTRO}-imu-tools \
     ros-${ROS_DISTRO}-teleop-twist-keyboard \
     ros-${ROS_DISTRO}-xacro \
@@ -54,7 +55,6 @@ COPY ros2_ws/src ./src
 
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     colcon build \
-        --symlink-install \
         --cmake-args -DCMAKE_BUILD_TYPE=Release \
     && rm -rf build/
 
