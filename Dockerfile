@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-yaml \
     python3-ply \
     libudev-dev \
+    libdrm-dev \
     ros-${ROS_DISTRO}-image-transport \
     ros-${ROS_DISTRO}-image-transport-plugins \
     ros-${ROS_DISTRO}-rosbridge-suite \
