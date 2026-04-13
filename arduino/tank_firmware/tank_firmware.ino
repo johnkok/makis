@@ -290,9 +290,7 @@ void setup() {
     }
 
     // Hardware external interrupts for FL and FR
-    attachInterrupt(digitalPinToInterrupt(ENC_FL_A), nullptr, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(ENC_FR_A), nullptr, CHANGE);
-    // Use raw EICRA/EIMSK for CHANGE on both INT0 and INT1
+    // Configure EICRA/EIMSK for CHANGE on both INT0 and INT1
     EICRA = (1 << ISC10) | (1 << ISC00);  // CHANGE on INT0 and INT1
     EIMSK = (1 << INT1)  | (1 << INT0);
 

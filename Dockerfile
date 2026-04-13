@@ -20,6 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     curl \
     build-essential \
+    colcon-common-extensions \
+    ros-${ROS_DISTRO}-ament-cmake \
+    ros-${ROS_DISTRO}-ament-python \
     ros-${ROS_DISTRO}-slam-toolbox \
     ros-${ROS_DISTRO}-nav2-bringup \
     ros-${ROS_DISTRO}-nav2-common \
