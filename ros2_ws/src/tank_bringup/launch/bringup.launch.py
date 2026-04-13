@@ -23,8 +23,8 @@ def generate_launch_description():
     bringup_dir = get_package_share_directory('tank_bringup')
     desc_dir    = get_package_share_directory('tank_description')
     urdf_path   = os.path.join(desc_dir, 'urdf', 'tank.urdf.xacro')
-    default_arduino_port = os.environ.get('ARDUINO_PORT', '/dev/ttyACM0')
-    default_lidar_port = os.environ.get('LIDAR_PORT', '/dev/ttyUSB0')
+    default_arduino_port = os.environ.get('ARDUINO_PORT', '/dev/ttyUSB0')
+    default_lidar_port = os.environ.get('LIDAR_PORT', '/dev/ttyAMA0')
     default_i2c_bus = os.environ.get('I2C_BUS', '1')
     i2c_device = f'/dev/i2c-{default_i2c_bus}'
 

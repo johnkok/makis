@@ -22,7 +22,7 @@ services:
     privileged: true            # access to /dev/ttyACM0, /dev/i2c-*, /dev/video*
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0   # Arduino
-      - /dev/ttyACM0:/dev/ttyACM0   # HLS-LFCD2 LiDAR
+      - /dev/ttyAMA0:/dev/ttyAMA0   # HLS-LFCD2 LiDAR
       - /dev/video0:/dev/video0     # Pi Camera
       - /dev/i2c-1:/dev/i2c-1       # IMU (I²C bus 1)
     volumes:
@@ -32,7 +32,7 @@ services:
     environment:
       <<: *ros-env
       ARDUINO_PORT: /dev/ttyUSB0
-      LIDAR_PORT: /dev/ttyACM0
+      LIDAR_PORT: /dev/ttyAMA0
       I2C_BUS: "1"
     restart: unless-stopped
     command: >

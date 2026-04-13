@@ -88,7 +88,7 @@ makis/
 # Install Arduino libraries (Arduino IDE or arduino-cli)
 # - Adafruit Motor Shield V2   (Library Manager)
 # - PS2X_lib by Bill Porter    (Library Manager)
-arduino-cli compile --upload -p /dev/ttyACM0 arduino/tank_firmware/
+arduino-cli compile --upload -p /dev/ttyUSB0 arduino/tank_firmware/
 ```
 
 ### 2 — Build Docker image on RPi 5
