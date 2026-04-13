@@ -58,7 +58,7 @@ RUN pip3 install --no-cache-dir \
 # ── Build libcamera from Raspberry Pi fork ───────────────────
 # RPi fork has rpi/pisp pipeline required for RPi5 CSI camera.
 # Ubuntu 22.04 ships libcamera 0.0.0 and meson 0.61; both are too old.
-RUN pip3 install --upgrade meson \
+RUN pip3 install --upgrade meson jinja2 \
     && git clone --depth 1 \
         https://github.com/raspberrypi/libcamera.git /tmp/libcamera \
     && cd /tmp/libcamera \
