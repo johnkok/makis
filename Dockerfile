@@ -55,14 +55,16 @@ RUN pip3 install --no-cache-dir \
     pyserial==3.5 \
     transforms3d==0.4.1
 
-# ── Build libcamera 0.1.0 from source ────────────────────────
-# Ubuntu 22.04 ships 0.0.0+git20220204; camera_ros requires ≥ 0.1.0
-RUN git clone --depth 1 --branch v0.3.0 \
-        https://git.libcamera.org/libcamera/libcamera.git /tmp/libcamera \
+# ── Build libcamera from Raspberry Pi fork ───────────────────
+# RPi fork has rpi/pisp pipeline required for RPi5 CSI camera.
+# Ubuntu 22.04 ships libcamera 0.0.0 and meson 0.61; both are too old.
+RUN pip3 install --upgrade meson \
+    && git clone --depth 1 \
+        https://github.com/raspberrypi/libcamera.git /tmp/libcamera \
     && cd /tmp/libcamera \
     && meson setup build --prefix=/usr \
-        -Dpipelines=all \
-        -Dipas=all \
+        -Dpipelines=rpi/vc4,rpi/pisp \
+        -Dipas=rpi/vc4,rpi/pisp \
         -Dlibunwind=disabled \
         -Dgstreamer=disabled \
         -Dtest=false \
